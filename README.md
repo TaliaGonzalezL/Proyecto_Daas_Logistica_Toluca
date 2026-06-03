@@ -1,73 +1,47 @@
-# 📦 Predicción de Retrasos en Suministros: Solución de Inteligencia Logística
+# 💡 LuxLogistics DaaS: Inteligencia Predictiva para el Corredor Toluca-Lerma
 
-## 📋 Resumen del Proyecto
-Este proyecto desarrolla un modelo de Machine Learning capaz de predecir con antelación si un envío se retrasará, permitiendo a las empresas de logística (enfocado en el sector de Toluca) tomar decisiones proactivas para mejorar la satisfacción del cliente y reducir costos operativos.
+![Logo](https://img.shields.io/badge/Status-Live-brightgreen)
+![Python](https://img.shields.io/badge/Python-3.12-blue)
+![Framework](https://img.shields.io/badge/Framework-Streamlit-red)
 
-Lo que hace especial a este proyecto es el **rigor analítico**: el modelo fue depurado a través de tres iteraciones para eliminar el *Data Leakage* (fuga de datos), garantizando que las predicciones sean honestas y aplicables al mundo real.
+## 🚀 [PRUEBA LA APP EN VIVO AQUÍ](https://luxlogisticsdaas1.streamlit.app)
 
----
-
-## 🎯 El Problema de Negocio
-En el dataset analizado (DataCo Supply Chain), se detectó que el **54.83% de los envíos sufren retrasos**. Para una empresa logística, esto representa:
-*   Pérdida de confianza del cliente.
-*   Costos adicionales en gestión de reclamos.
-*   Ineficiencia en la asignación de transporte.
-
-**Objetivo:** Construir un sistema de alerta temprana que identifique pedidos en riesgo de retraso en el momento en que se realizan.
+### 📋 Resumen del Proyecto
+LuxLogistics DaaS es una solución de **Data-as-a-Service** diseñada para iluminar la ruta de decisiones en la cadena de suministro. Mediante el uso de Machine Learning, identificamos riesgos de retraso en envíos antes de que estos salgan del almacén, enfocándonos en la realidad industrial del Valle de Toluca, México.
 
 ---
 
-## 🛠️ Herramientas Utilizadas
-*   **Lenguaje:** Python 3.x
-*   **Bibliotecas:** Pandas, NumPy, Scikit-Learn, Matplotlib, Seaborn.
-*   **Metodología:** Pipelines de preprocesamiento, validación cruzada y análisis de importancia de variables.
+### 🧠 El Diferenciador: Ciencia de Datos Honesta
+A diferencia de modelos convencionales, este proyecto ha sido sometido a un riguroso proceso de limpieza para eliminar el **Data Leakage** (Fuga de Datos). 
+*   **Modelo Ganador:** RandomForestClassifier (Optimizado y Comprimido).
+*   **F1-Score:** 0.74 (Un resultado honesto y aplicable a la realidad operativa).
+
+### 📊 Hallazgos de Autoridad
+*   **La Paradoja del Servicio:** Se detectó que los envíos "First Class" presentan una tasa de incumplimiento cercana al 95%, revelando una ineficiencia crítica en la selección de proveedores premium.
+*   **Factores Clave:** El valor de la venta (*Sales*) y la estacionalidad del pedido son los principales predictores de riesgo.
 
 ---
 
-## 🚀 Proceso y Aprendizajes Clave
-
-### 1. Limpieza Ética y Técnica
-*   Se eliminó Información Personal Identificable (PII) para cumplir con estándares de privacidad.
-*   Se descartaron columnas con más del 80% de valores nulos (como `Product Description` y `Order Zipcode`).
-
-### 2. El Desafío del Data Leakage (Fuga de Datos) 🚩
-Esta fue la parte más crítica del proyecto. Inicialmente, el modelo obtenía una precisión del 98%, lo cual era "demasiado bueno para ser verdad". 
-*   **Detección:** Identificamos que variables como `Days for shipping (real)` y `Order Status` estaban entregando la respuesta al modelo antes de tiempo.
-*   **Solución:** Se rediseñó el conjunto de datos tres veces hasta obtener un **modelo honesto** basado únicamente en información disponible al momento del pedido.
-
-### 3. Feature Engineering
-Se crearon nuevas variables para capturar patrones temporales:
-*   `order_month` (Mes del pedido)
-*   `order_day_of_week` (Día de la semana)
-*   Esto permitió al modelo entender la estacionalidad de los retrasos.
+### 📂 Estructura del Repositorio
+*   `app.py`: Código de la interfaz interactiva en Streamlit.
+*   `modelo_luxlogistics.joblib`: El "cerebro" predictivo (comprimido para alta eficiencia).
+*   `requirements.txt`: Dependencias necesarias para el despliegue.
+*   `Proyecto_Daas_Logistica_Toluca.ipynb`: El cuaderno de investigación original.
+*   `Reporte_LuxLogistics_2024.pdf`: El diagnóstico profesional con insights de negocio.
 
 ---
 
-## 📊 Resultados y Evaluación
-
-Se compararon dos modelos principales:
-1.  **Regresión Logística (Baseline):** Útil para entender la tendencia, pero con bajo recall.
-2.  **RandomForestClassifier (Ganador):** Elegido por su capacidad de manejar relaciones no lineales y su balance superior entre precisión y sensibilidad.
-
-| Métrica | Resultado |
-| :--- | :--- |
-| **F1-Score (Clase 1 Retrasado)** | **0.74** |
-| **Precision** | **0.75** |
-| **Recall** | **0.72** |
+### 🛠️ Instalación y Uso Local
+Si deseas correr este proyecto en tu máquina:
+1. Clona el repositorio.
+2. Instala las dependencias: `pip install -r requirements.txt`
+3. Ejecuta la app: `streamlit run app.py`
 
 ---
 
-## 🧠 Interpretabilidad: ¿Por qué ocurren los retrasos?
+## 👩‍💻 Sobre la Autora
+**LCDE. Talia González López**
+*Data Strategist & Founder de LuxLogistics DaaS*
+Iluminando la ruta de tus decisiones en el Estado de México.
 
-Gracias al análisis de `feature_importances_`, descubrimos los verdaderos impulsores de los retrasos:
-1.  **Sales (Ventas):** El valor monetario de la orden es el predictor más fuerte.
-2.  **Patrones Temporales:** El día de la semana y el mes impactan significativamente en la probabilidad de demora.
-
-![Importancia de Características](importancia_caracteristicas.png)
-<img width="679" height="455" alt="importancia_caracteristicas" src="https://github.com/user-attachments/assets/5633ba36-878d-4b8b-a695-7d6e73afd5f8" />
-
----
-
-## 👩‍💻 Autora
-**Talia González**
-*Científica de Datos en Formación | Especialista en Análisis de Decisiones Logísticas.*
+[LinkedIn](TU_LINK_DE_LINKEDIN) | [Email](mailto:talia.golo2@gmail.com)
