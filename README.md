@@ -44,4 +44,4 @@ Si deseas correr este proyecto en tu máquina:
 *Data Strategist & Founder de LuxLogistics DaaS*
 Iluminando la ruta de tus decisiones en el Estado de México.
 
-[LinkedIn](TU_LINK_DE_LINKEDIN) | [Email](mailto:talia.golo2@gmail.com)
+[LinkedIn](www.linkedin.com/in/talia-gonzález) | [Email](mailto:talia.golo2@gmail.com)
