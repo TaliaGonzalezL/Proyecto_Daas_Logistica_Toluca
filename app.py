@@ -86,12 +86,19 @@ with tab_chat:
     st.markdown("Esta sección utiliza Agentes de IA para analizar tus bases de datos en tiempo real.")
     
     if df_ia is not None:
-        user_api_key = st.text_input("Introduce tu Google API Key (Gemini):", type="password")
+        user_api_key = None
+
+        try:
+            if 'GOOGLE_API_KEY' in st.secrets:
+                user_api_key = st.secrets['GOOGLE_API_KEY']
+        except:
+            pass
         
         if user_api_key:
             pregunta = st.text_input("Hazle una pregunta a la base de datos de LuxLogistics:")
-            
+
             if pregunta:
+                res_final = "" # Inicialización auditada por Talia
                 try:
                     # 1. Configuración del LLM
                     llm = ChatGoogleGenerativeAI(
@@ -102,9 +109,23 @@ with tab_chat:
                     
                     # 2. Prefix optimizado
                     prefix = """
-                    You are a Python expert. The dataframe 'df' has columns like 'Order Region' and 'Sales'.
-                    To find the top regions by sales, use: df.groupby('Order Region')['Sales'].mean().
-                    Always answer in Spanish and end with 'Final Answer:'
+                    You are a Senior Logistics Strategy Consultant. The dataframe is 'df'.
+                    
+                    STRATEGIC CONTEXT (Talia's Research):
+                    - Region: Toluca-Lerma Industrial Corridor.
+                    - Critical Finding: 'First Class' shipping has a 95% failure rate in this region.
+                    - Global Insight: 54% of all shipments are delayed.
+                    - 'Honest ML': This system is depurated from Data Leakage to ensure real-world reliability.
+                    
+                    TECHNICAL GUIDANCE:
+                    - To find the top regions by sales, use: df.groupby('Order Region')['Sales'].mean().
+                    - To analyze risk, focus on 'Shipping Mode' and 'Sales'.
+                    - Always prioritize the financial impact of logistics delays.
+                    
+                    RULES:
+                    1. Use Thought/Action/Action Input/Observation cycle.
+                    2. ALWAYS provide a 'Final Answer:' in SPANISH.
+                    3. Use professional terms: 'Falla Sistémica', 'Promesa de Entrega', 'Margen Operativo'.
                     """
 
                     # 3. Creación del Agente
@@ -113,7 +134,7 @@ with tab_chat:
                         df_ia, 
                         verbose=True, 
                         allow_dangerous_code=True,
-                        max_iterations=5,
+                        max_iterations=15,
                         agent_type="zero-shot-react-description",
                         prefix=prefix
                     )
@@ -121,14 +142,16 @@ with tab_chat:
                     with st.spinner("LuxLogistics AI está analizando tu consulta..."):
                         try:
                             # Intento de ejecución normal
-                            resultado = agent.invoke(pregunta)
+                            resultado = agent.invoke({"input": pregunta}, {"handle_parsing_errors": True})
                             res_final = resultado['output']
                         except Exception as parse_err:
                             # --- ESCUDO DE RESCATE SI HAY ERROR DE FORMATO ---
                             error_str = str(parse_err)
                             
-                            if "429" in error_str or "quota" in error_str.lower():
-                                res_final = "⚠️ Límite de Google alcanzado. Espera 1 minuto."
+                            # 1. Filtro de Cuota y Servidor (503/429)
+                            if "503" in error_str or "429" in error_str or "quota" in error_str.lower():
+                                res_final = "⚠️ El servidor de inteligencia está saturado. Por favor, reintenta en 1 minuto."    
+                            # 2. Rescate de respuesta del buffer
                             elif "Final Answer:" in error_str:
                                 res_final = error_str.split("Final Answer:")[-1]
                             elif "Could not parse LLM output: `" in error_str:
@@ -145,14 +168,14 @@ with tab_chat:
                         res_final = res_final.replace("`", "").strip()
 
                         # --- MOSTRAR RESULTADO ---
-                        if len(res_final) > 5:
-                            st.success("✅ Análisis Completado")
+                        if len(res_final) > 0:
+                            st.success("✅ Análisis Logístico Completado")
                             st.markdown(f"## {res_final}")
                         else:
-                            st.warning("La IA procesó los datos pero no logramos extraer una respuesta clara. Intenta reformular.")
+                            st.warning("La IA no pudo procesar la consulta. Intenta reformular.")
 
                 except Exception as e:
-                    st.error(f"Error de conexión: {e}")
+                    st.error(f"Error crítico en elmotor: {e}")
         else:
             st.info("💡 Introduce tu API Key de Google AI Studio para comenzar.")
     else:
