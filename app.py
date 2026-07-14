@@ -94,9 +94,15 @@ with tab_chat:
         except:
             pass
         
+        if not user_api_key:
+            user_api_key = st.text_input("Introduce tu Google API Key:", type="password")        
+
         if user_api_key:
             pregunta = st.text_input("Hazle una pregunta a la base de datos de LuxLogistics:")
 
+            # --- ESPACIO EN BLANCO MÁGICO PARA LIMPIAR LA PANTALLA ---
+            contenedor_respuesta = st.empty()
+                        
             if pregunta:
                 res_final = "" # Inicialización auditada por Talia
                 try:
@@ -140,6 +146,8 @@ with tab_chat:
                     )
 
                     with st.spinner("LuxLogistics AI está analizando tu consulta..."):
+                        # LIMPIAMOS EL ERROR ANTERIOR ANTES DE EMPEZAR
+                        contenedor_respuesta.empty() 
                         try:
                             # Intento de ejecución normal
                             resultado = agent.invoke({"input": pregunta}, {"handle_parsing_errors": True})
@@ -148,10 +156,13 @@ with tab_chat:
                             # --- ESCUDO DE RESCATE SI HAY ERROR DE FORMATO ---
                             error_str = str(parse_err)
                             
-                            # 1. Filtro de Cuota y Servidor (503/429)
+                            # 1. Filtro de Cuota y Servidor (503/429).--- FILTRO DE ERROR TÉCNICO (NO ES ÉXITO) ---
                             if "503" in error_str or "429" in error_str or "quota" in error_str.lower():
-                                res_final = "⚠️ El servidor de inteligencia está saturado. Por favor, reintenta en 1 minuto."    
-                            # 2. Rescate de respuesta del buffer
+                               # Usamos return para salir del bloque y mostrar el aviso correctamente
+                               contenedor_respuesta.warning("🌐 **El servidor de Google está saturado.** Por favor, espera 1 minuto. Este límite es propio de la capa gratuita.")#     
+                               st.stop()
+
+                            # 2. Rescate de respuesta del buffer --- RESCATE DE RESPUESTA REAL ---
                             elif "Final Answer:" in error_str:
                                 res_final = error_str.split("Final Answer:")[-1]
                             elif "Could not parse LLM output: `" in error_str:
@@ -169,14 +180,11 @@ with tab_chat:
 
                         # --- MOSTRAR RESULTADO ---
                         if len(res_final) > 0:
-                            st.success("✅ Análisis Logístico Completado")
-                            st.markdown(f"## {res_final}")
-                        else:
-                            st.warning("La IA no pudo procesar la consulta. Intenta reformular.")
+                            with contenedor_respuesta.container():
+                                st.success("✅ Análisis Logístico Completado")
+                                st.markdown(f"## {res_final}")
 
                 except Exception as e:
-                    st.error(f"Error crítico en elmotor: {e}")
-        else:
-            st.info("💡 Introduce tu API Key de Google AI Studio para comenzar.")
+                    st.error(f"Error crítico: {e}")
     else:
-        st.error("❌ El chat no está disponible porque falta el archivo de datos.")
+        st.error("❌ Archivo de datos no encontrado.")
